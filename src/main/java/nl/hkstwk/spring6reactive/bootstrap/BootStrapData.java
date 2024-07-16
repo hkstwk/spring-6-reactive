@@ -3,7 +3,9 @@ package nl.hkstwk.spring6reactive.bootstrap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.hkstwk.spring6reactive.domain.Beer;
+import nl.hkstwk.spring6reactive.domain.Customer;
 import nl.hkstwk.spring6reactive.repositories.BeerRepository;
+import nl.hkstwk.spring6reactive.repositories.CustomerRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -16,12 +18,34 @@ import java.time.LocalDateTime;
 public class BootStrapData implements CommandLineRunner {
 
     private final BeerRepository beerRepository;
+    private final CustomerRepository customerRepository;
 
     @Override
     public void run(String... args) throws Exception {
         beerRepository.count().subscribe(this::loadBeerData);
+        customerRepository.count().subscribe(this::loadCustomerData);
 
-        beerRepository.count().subscribe(count -> log.info("Count is {}", count));
+        beerRepository.count().subscribe(count -> log.info("Beer count is {}", count));
+        customerRepository.count().subscribe(count -> log.info("Customer count is {}", count));
+    }
+
+    private void loadCustomerData(final Long count) {
+        if (count == 0){
+            Customer customer1 = Customer.builder()
+                    .customerName("Cafe de Rechter")
+                    .createdDate(LocalDateTime.now())
+                    .lastModifiedDate(LocalDateTime.now())
+                    .build();
+
+            Customer customer2 = Customer.builder()
+                    .customerName("Cafe Fanfare")
+                    .createdDate(LocalDateTime.now())
+                    .lastModifiedDate(LocalDateTime.now())
+                    .build();
+
+            customerRepository.save(customer1).subscribe();
+            customerRepository.save(customer2).subscribe();
+        }
     }
 
     private void loadBeerData(final Long count) {

@@ -1,4 +1,5 @@
-CREATE TABLE IF NOT EXISTS beer (
+CREATE TABLE IF NOT EXISTS beer
+(
     id                 integer not null primary key auto_increment,
     beer_name          varchar(255),
     beer_style         varchar(255),
@@ -8,3 +9,12 @@ CREATE TABLE IF NOT EXISTS beer (
     created_date       timestamp,
     last_modified_date timestamp
 );
+
+CREATE TABLE IF NOT EXISTS customer
+(
+    id                 integer not null primary key auto_increment,
+    customer_name      varchar(255),
+    created_date       timestamp,
+    last_modified_date timestamp
+
+)
