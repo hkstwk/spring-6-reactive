@@ -1,6 +1,7 @@
 package nl.hkstwk.spring6reactive.controllers;
 
 import nl.hkstwk.spring6reactive.domain.Beer;
+import nl.hkstwk.spring6reactive.model.BeerDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -24,6 +25,15 @@ class BeerControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().valueEquals("Content-Type", "application/json")
-                .expectBodyList(Beer.class).hasSize(3);
+                .expectBodyList(BeerDTO.class).hasSize(3);
+    }
+
+    @Test
+    void testGetBeerById() {
+        webTestClient.get().uri(BeerController.BEER_PATH_ID, 2)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().valueEquals("Content-Type", "application/json")
+                .expectBody(BeerDTO.class);
     }
 }
