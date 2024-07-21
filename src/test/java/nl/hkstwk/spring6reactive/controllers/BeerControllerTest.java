@@ -76,6 +76,18 @@ class BeerControllerTest {
     }
 
     @Test
+    void testUpdateBeerInvalidData() {
+        Beer testBeer = BeerRepositoryTest.getTestBeer();
+        testBeer.setBeerStyle("");
+
+        webTestClient.put().uri(BeerController.BEER_PATH_ID, 1)
+                .body(Mono.just(testBeer), BeerDTO.class)
+                .header("Content-Type", "application/json")
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
     void testaDeleteBeer() {
         webTestClient.delete().uri(BeerController.BEER_PATH_ID, 1)
                 .exchange()
