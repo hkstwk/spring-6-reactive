@@ -58,7 +58,6 @@ class BeerControllerTest {
                 .expectHeader().location("http://localhost:8080/api/v2/beer/4");
     }
 
-
     @Test
     void testCreateBeerInvalidData(){
         Beer testBeer = BeerRepositoryTest.getTestBeer();
@@ -83,6 +82,17 @@ class BeerControllerTest {
     }
 
     @Test
+    @Order(3)
+    void testUpdateBeerNotFound() {
+        webTestClient.put().uri(BeerController.BEER_PATH_ID, 999)
+                .body(Mono.just(BeerRepositoryTest.getTestBeer()), BeerDTO.class)
+                .header("Content-Type", "application/json")
+                .exchange()
+                .expectStatus().isNotFound();
+
+    }
+
+    @Test
     void testUpdateBeerInvalidData() {
         Beer testBeer = BeerRepositoryTest.getTestBeer();
         testBeer.setBeerStyle("");
@@ -100,4 +110,5 @@ class BeerControllerTest {
                 .exchange()
                 .expectStatus().isNoContent();
     }
+
 }
