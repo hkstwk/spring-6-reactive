@@ -3,6 +3,7 @@ package nl.hkstwk.spring6reactive.controllers;
 import lombok.RequiredArgsConstructor;
 import nl.hkstwk.spring6reactive.domain.CustomerDTO;
 import nl.hkstwk.spring6reactive.services.CustomerService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -27,13 +29,14 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping(CUSTOMER_PATH)
-    Flux<CustomerDTO> listCustomers(){
+    Flux<CustomerDTO> listCustomers() {
         return customerService.listCustomers();
     }
 
     @GetMapping(CUSTOMER_PATH_ID)
     Mono<CustomerDTO> getBeerById(@PathVariable Integer customerId) {
-        return customerService.getCustomerById(customerId);
+        return customerService.getCustomerById(customerId)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
 
     @PostMapping(CUSTOMER_PATH)
@@ -47,21 +50,25 @@ public class CustomerController {
     }
 
     @PutMapping(CUSTOMER_PATH_ID)
-    Mono<ResponseEntity<Void>> updateCustomer(@PathVariable Integer customerId, @Validated @RequestBody CustomerDTO customerDTO){
+    Mono<ResponseEntity<Void>> updateCustomer(@PathVariable Integer customerId, @Validated @RequestBody CustomerDTO customerDTO) {
         return customerService.updateCustomer(customerId, customerDTO)
-                .map(savedDto-> ResponseEntity.noContent().build());
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                .map(savedDto -> ResponseEntity.noContent().build());
     }
 
 
     @PatchMapping(CUSTOMER_PATH_ID)
-    Mono<ResponseEntity<Void>> patchCustomer(@PathVariable Integer customerId, @Validated @RequestBody CustomerDTO customerDTO){
+    Mono<ResponseEntity<Void>> patchCustomer(@PathVariable Integer customerId, @Validated @RequestBody CustomerDTO customerDTO) {
         return customerService.patchCustomer(customerId, customerDTO)
-                .map(savedDto-> ResponseEntity.ok().build());
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                .map(savedDto -> ResponseEntity.ok().build());
     }
 
     @DeleteMapping(CUSTOMER_PATH_ID)
-    Mono<ResponseEntity<Void>> deleteCustomer(@PathVariable Integer customerId){
-        return customerService.deleteBeer(customerId)
+    Mono<ResponseEntity<Void>> deleteCustomer(@PathVariable Integer customerId) {
+        return customerService.getCustomerById(customerId)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                .map(customerDTO -> customerService.deleteBeer(customerDTO.getId()))
                 .thenReturn(ResponseEntity.noContent().build());
     }
 }
