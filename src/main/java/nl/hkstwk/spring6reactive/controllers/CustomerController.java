@@ -49,7 +49,7 @@ public class CustomerController {
     @PutMapping(CUSTOMER_PATH_ID)
     Mono<ResponseEntity<Void>> updateCustomer(@PathVariable Integer customerId, @Validated @RequestBody CustomerDTO customerDTO){
         return customerService.updateCustomer(customerId, customerDTO)
-                .map(savedDto-> ResponseEntity.ok().build());
+                .map(savedDto-> ResponseEntity.noContent().build());
     }
 
 
@@ -62,6 +62,6 @@ public class CustomerController {
     @DeleteMapping(CUSTOMER_PATH_ID)
     Mono<ResponseEntity<Void>> deleteCustomer(@PathVariable Integer customerId){
         return customerService.deleteBeer(customerId)
-                .map(response -> ResponseEntity.noContent().build());
+                .thenReturn(ResponseEntity.noContent().build());
     }
 }
