@@ -105,22 +105,20 @@ class BeerControllerTest {
 
     @Test
     void testPatchBeer() {
-        webTestClient.put().uri(BeerController.BEER_PATH_ID, 1)
+        webTestClient.patch().uri(BeerController.BEER_PATH_ID, 1)
                 .body(Mono.just(BeerRepositoryTest.getTestBeer()), BeerDTO.class)
                 .header("Content-Type", "application/json")
                 .exchange()
-                .expectStatus().isNoContent();
-
+                .expectStatus().isOk();
     }
 
     @Test
     void testPatchBeerNotFound() {
-        webTestClient.put().uri(BeerController.BEER_PATH_ID, 999)
+        webTestClient.patch().uri(BeerController.BEER_PATH_ID, 999)
                 .body(Mono.just(BeerRepositoryTest.getTestBeer()), BeerDTO.class)
                 .header("Content-Type", "application/json")
                 .exchange()
                 .expectStatus().isNotFound();
-
     }
 
     @Test

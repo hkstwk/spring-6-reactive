@@ -1,6 +1,5 @@
 package nl.hkstwk.spring6reactive.controllers;
 
-import nl.hkstwk.spring6reactive.domain.Beer;
 import nl.hkstwk.spring6reactive.domain.Customer;
 import nl.hkstwk.spring6reactive.domain.CustomerDTO;
 import org.junit.jupiter.api.MethodOrderer;
@@ -12,10 +11,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
-
-import java.math.BigDecimal;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest

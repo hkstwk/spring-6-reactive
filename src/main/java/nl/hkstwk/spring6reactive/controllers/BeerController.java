@@ -59,13 +59,14 @@ public class BeerController {
     @PatchMapping(BEER_PATH_ID)
     Mono<ResponseEntity<Void>> patchBeer(@PathVariable Integer beerId, @Validated @RequestBody BeerDTO beerDTO){
         return beerService.patchBeer(beerId, beerDTO)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
                 .map(patchedDto -> ResponseEntity.ok().build());
     }
 
     @DeleteMapping(BEER_PATH_ID)
-    Mono<ResponseEntity<Void>> deleteBeer(@PathVariable Integer beerId){
+    Mono<ResponseEntity<Void>> deleteBeer(@PathVariable Integer beerId) {
         return beerService.getBeerById(beerId)
-                        .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
                 .map(beerDTO -> beerService.deleteBeer(beerDTO.getId()))
                 .thenReturn(ResponseEntity.noContent().build());
     }
