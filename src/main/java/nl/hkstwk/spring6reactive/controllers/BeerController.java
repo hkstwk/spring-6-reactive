@@ -3,6 +3,8 @@ package nl.hkstwk.spring6reactive.controllers;
 import lombok.RequiredArgsConstructor;
 import nl.hkstwk.spring6reactive.model.BeerDTO;
 import nl.hkstwk.spring6reactive.services.BeerService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -33,7 +36,8 @@ public class BeerController {
 
     @GetMapping(BEER_PATH_ID)
     Mono<BeerDTO> getBeerById(@PathVariable("beerId") Integer beerId){
-        return beerService.getBeerById(beerId);
+        return beerService.getBeerById(beerId)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
 
     @PostMapping(BEER_PATH)
